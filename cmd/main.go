@@ -23,7 +23,7 @@ func startLogging() {
 			Exchange: "TelegramBot",
 			ChainId:  1,
 		},
-		"TEST_app_status_checker",
+		cfg.AppName,
 	)
 	log.AMQPMsg("App checker started")
 }
