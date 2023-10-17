@@ -38,6 +38,9 @@
     'gearbox-ws-trading': [
       'https://goerli.gearbox.foundation/gearbox-ws/metrics',
     ],
+    gpointbot: [
+      'https://goerli.gearbox.foundation/gpointbot/metrics',
+    ],
     trading_price: [
       'https://goerli.gearbox.foundation/api/tradingview/config',
     ],
