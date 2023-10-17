@@ -28,9 +28,7 @@ func startLogging() {
 	log.AMQPMsg("App checker started")
 }
 
-type StatusConfig struct {
-	Mainnet ApplicationsUrl `json:"mainnet"`
-}
+type StatusConfig map[string]ApplicationsUrl
 
 type ApplicationsUrl map[string][]string
 
@@ -39,30 +37,33 @@ func main() {
 	//
 	statusCfg := loadStatusConfig()
 	for {
-		checkStatus(statusCfg.Mainnet)
+		for netName, apps := range statusCfg {
+			checkStatus(netName, apps)
+
+		}
 		time.Sleep(5 * time.Minute)
 	}
 }
-func checkStatus(statusCfg ApplicationsUrl) {
+func checkStatus(netName string, statusCfg ApplicationsUrl) {
 	for app, urls := range statusCfg {
 		for _, url := range urls {
 			resp, err := http.Get(url)
 			if err != nil {
-				log.Errorf("Error(%s): %s[%s] is down.", err.Error(), app, url)
+				log.Errorf("Error(%s): %s_%s[%s] is down.", err.Error(), netName, app, url)
 			} else if resp.StatusCode/100 != 2 {
 				{
-					log.Errorf("Error(%s): %s[%s] is down.", resp.Status, app, url)
+					log.Errorf("Error(%s): %s_%s[%s] is down.", resp.Status, netName, app, url)
 				}
 			}
 		}
 	}
 	log.Infof("Checked %d applications", len(statusCfg))
 }
-func loadStatusConfig() *StatusConfig {
-	cfg := &StatusConfig{}
+func loadStatusConfig() StatusConfig {
+	cfg := map[string]ApplicationsUrl{}
 	dataStr, err := core.GetJsonnetFile("config.jsonnet", core.JsonnetImports{})
 	log.CheckFatal(err)
 	reader := bytes.NewBuffer([]byte(dataStr))
-	utils.ReadJsonReaderAndSetInterface(reader, cfg)
+	utils.ReadJsonReaderAndSetInterface(reader, &cfg)
 	return cfg
 }
