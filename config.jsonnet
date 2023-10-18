@@ -23,18 +23,18 @@
     ],
   },
   anvil: {
-    // 'third-eye': [
-    //   'https://goerli.gearbox.foundation/metrics',
-    // ],
+    'third-eye': [
+      'https://goerli.gearbox.foundation/metrics',
+    ],
     // definder: [
     //   'https://definder.fly.dev/metrics',
     // ],
     // 'go-liquidator': [
     //   'https://go-liquidator.fly.dev/metrics',
     // ],
-    // charts_server: [
-    //   'https://goerli.gearbox.foundation/health',
-    // ],
+    charts_server: [
+      'https://goerli.gearbox.foundation/health',
+    ],
     'gearbox-ws-trading': [
       'https://goerli.gearbox.foundation/gearbox-ws/metrics',
     ],
