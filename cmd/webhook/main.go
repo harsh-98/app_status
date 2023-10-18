@@ -138,8 +138,12 @@ type runCmdsObj struct {
 }
 
 func (m *runCmdsObj) ServeHTTP(hw http.ResponseWriter, hr *http.Request) {
-	go m.runCmds()
-	fmt.Fprint(hw, "OK")
+	if hr.Method == "POST" {
+		go m.runCmds()
+		fmt.Fprint(hw, "OK")
+	} else {
+		fmt.Fprint(hw, "Only POST allowed")
+	}
 }
 
 func server() {
