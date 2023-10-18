@@ -26,6 +26,9 @@
     'third-eye': [
       'https://goerli.gearbox.foundation/metrics',
     ],
+    webhook: [
+      'https://goerli.gearbox.foundation/webhook/health',
+    ],
     // definder: [
     //   'https://definder.fly.dev/metrics',
     // ],

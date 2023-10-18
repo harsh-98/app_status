@@ -69,10 +69,13 @@ func server() {
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: mux,
 	}
+	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "OK")
+	}))
 
-	log.Infof("Starting prometheus at :%d", cfg.Port)
+	log.AMQPMsg("Anvil Webhook started")
 	srv.ListenAndServe()
 }
 func main() {
-	go server()
+	server()
 }
