@@ -3,7 +3,7 @@ module github.com/Gearbox-protocol/app_status
 go 1.19
 
 require (
-	github.com/Gearbox-protocol/sdk-go v0.0.0-20230922143533-4acc0d43eb68
+	github.com/Gearbox-protocol/sdk-go v0.0.0-20231018134112-d7c4678cb114
 	github.com/joho/godotenv v1.5.1
 )
 
