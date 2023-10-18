@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"os/exec"
+	"strings"
 	"sync"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -11,17 +15,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var cmds = []string{
-	"sudo systemctl stop gpointbot",
-	"cd /home/debian/gpointbot; sqlite3 local.db  'drop table last_snaps ; drop table user_points;'",
-	"sudo systemctl restart gpointbot",
-	"sudo systemctl restart trading_price",
-	"sudo systemctl restart gearbox-ws",
-	"sudo systemctl stop third-eye",
-	"sudo systemctl stop charts_server",
-	"cd /home/debian/third-eye; bash -x ./db_scripts/local_testing/local_test.sh '139.177.179.137' '' debian",
-	"sudo systemctl restart third-eye",
-	"sudo systemctl restart charts_server",
+var cmds = [][]string{
+	// {"bash", "-x", "/Users/harshjain/BACKUP/gearbox/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "172.232.121.133", "harshjain"},
+	{"sudo systemctl stop gpointbot"},
+	{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps ; drop table user_points;"},
+	{"sudo systemctl restart gpointbot"},
+	{"sudo systemctl restart trading_price"},
+	{"sudo systemctl restart gearbox-ws"},
+	{"sudo systemctl stop third-eye"},
+	{"sudo systemctl stop charts_server"},
+	{"bash", "-x", "/home/debian/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "", "debian"},
+	{"sudo systemctl restart third-eye"},
+	{"sudo systemctl restart charts_server"},
 }
 
 type Config struct {
@@ -37,14 +42,94 @@ func getConfig() *Config {
 	return cfg
 }
 
+func runCmdOld(cmdStr []string) {
+	cmd := exec.Command(cmdStr[0], cmdStr[1:]...)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err,
+			"stdIn ", stdout.String(),
+			"stdOut", stderr.String(),
+			"for cmd", cmdStr, len(cmdStr),
+		)
+	}
+}
+
+func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
+	var out []byte
+	buf := make([]byte, 1024, 1024)
+	for {
+		n, err := r.Read(buf[:])
+		if n > 0 {
+			d := buf[:n]
+			out = append(out, d...)
+			_, err := w.Write(d)
+			if err != nil {
+				return out, err
+			}
+		}
+		if err != nil {
+			// Read returns io.EOF at the end of file, which is not an error for us
+			if err == io.EOF {
+				err = nil
+			}
+			return out, err
+		}
+	}
+}
+func runCmdNew(cmdStr []string) (string, string, error) {
+	cmd := exec.Command(cmdStr[0], cmdStr[1:]...)
+
+	var stdout, stderr []byte
+	var errStdout, errStderr error
+	stdoutIn, _ := cmd.StdoutPipe()
+	stderrIn, _ := cmd.StderrPipe()
+	err := cmd.Start()
+	if err != nil {
+		log.Fatalf("cmd.Start() failed with '%s'\n", err)
+	}
+
+	// cmd.Wait() should be called only after we finish reading
+	// from stdoutIn and stderrIn.
+	// wg ensures that we finish
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		stdout, errStdout = copyAndCapture(os.Stdout, stdoutIn)
+		wg.Done()
+	}()
+
+	stderr, errStderr = copyAndCapture(os.Stderr, stderrIn)
+
+	wg.Wait()
+
+	err = cmd.Wait()
+	if err != nil {
+		return "", "", fmt.Errorf("cmd.Run() failed with %s", err)
+	}
+	if errStdout != nil || errStderr != nil {
+		return "", "", fmt.Errorf("failed to capture stdout or stderr")
+	}
+	outStr, errStr := string(stdout), string(stderr)
+	return outStr, errStr, nil
+}
 func (m *runCmdsObj) runCmds() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	log.AMQPMsg("Anvil Webhook received")
 	for _, cmdStr := range cmds {
-		cmd := exec.Command(cmdStr)
-		err := cmd.Run()
-		log.CheckFatal(err)
+		if len(cmdStr) == 1 {
+			cmdStr = strings.Split(cmdStr[0], " ")
+		}
+		// runCmdOld(cmdStr)
+		stdout, stderr, err := runCmdNew(cmdStr)
+		if err != nil {
+			log.Info(stdout)
+			log.Info(stderr)
+			log.Fatal(err)
+		}
 	}
 }
 
