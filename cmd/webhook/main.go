@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"sync"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/joho/godotenv"
 )
 
 var cmds = []string{
@@ -24,16 +26,21 @@ var cmds = []string{
 
 type Config struct {
 	log.CommonEnvs
-	Port int64 `env:"PORT"`
+	Port int64 `env:"PORT" default:"9090"`
 }
 
 func getConfig() *Config {
+	godotenv.Load(".env")
 	cfg := &Config{}
+	utils.ReadFromEnv(&cfg.CommonEnvs)
 	utils.ReadFromEnv(cfg)
 	return cfg
 }
 
-func runCmds() {
+func (m *runCmdsObj) runCmds() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	log.AMQPMsg("Anvil Webhook received")
 	for _, cmdStr := range cmds {
 		cmd := exec.Command(cmdStr)
 		err := cmd.Run()
@@ -42,10 +49,11 @@ func runCmds() {
 }
 
 type runCmdsObj struct {
+	mu sync.Mutex
 }
 
-func (runCmdsObj) ServeHTTP(hw http.ResponseWriter, hr *http.Request) {
-	go runCmds()
+func (m *runCmdsObj) ServeHTTP(hw http.ResponseWriter, hr *http.Request) {
+	go m.runCmds()
 	fmt.Fprint(hw, "OK")
 }
 
@@ -64,7 +72,7 @@ func server() {
 	)
 	//
 	mux := http.NewServeMux()
-	mux.Handle("/anvil_fork_reset", runCmdsObj{})
+	mux.Handle("/anvil_fork_reset", &runCmdsObj{})
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: mux,
