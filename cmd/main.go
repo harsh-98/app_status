@@ -57,7 +57,7 @@ func checkStatus(netName string, statusCfg ApplicationsUrl) {
 			}
 		}
 	}
-	log.Infof("Checked %d applications", len(statusCfg))
+	log.Infof("Checked %d applications for %s", len(statusCfg), netName)
 }
 func loadStatusConfig() StatusConfig {
 	cfg := map[string]ApplicationsUrl{}
