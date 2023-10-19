@@ -24,10 +24,10 @@
   },
   anvil: {
     'third-eye': [
-      'https://goerli.gearbox.foundation/metrics',
+      'https://testnet.gearbox.foundation/metrics',
     ],
     webhook: [
-      'https://goerli.gearbox.foundation/webhook/health',
+      'https://testnet.gearbox.foundation/webhook/health',
     ],
     // definder: [
     //   'https://definder.fly.dev/metrics',
@@ -36,16 +36,16 @@
     //   'https://go-liquidator.fly.dev/metrics',
     // ],
     charts_server: [
-      'https://goerli.gearbox.foundation/health',
+      'https://testnet.gearbox.foundation/health',
     ],
     'gearbox-ws-trading': [
-      'https://goerli.gearbox.foundation/gearbox-ws/metrics',
+      'https://testnet.gearbox.foundation/gearbox-ws/metrics',
     ],
     gpointbot: [
-      'https://goerli.gearbox.foundation/gpointbot/metrics',
+      'https://testnet.gearbox.foundation/gpointbot/metrics',
     ],
     trading_price: [
-      'https://goerli.gearbox.foundation/api/tradingview/config',
+      'https://testnet.gearbox.foundation/api/tradingview/config',
     ],
   },
 }
