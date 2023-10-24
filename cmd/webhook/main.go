@@ -18,7 +18,7 @@ import (
 var cmds = [][]string{
 	// {"bash", "-x", "/Users/harshjain/BACKUP/gearbox/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "172.232.121.133", "harshjain"},
 	{"sudo systemctl stop gpointbot"},
-	{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps ; drop table user_points;"},
+	{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps ; drop table user_points; drop table events;"},
 	{"sudo systemctl restart gpointbot"},
 	{"sudo systemctl restart trading_price"},
 	{"sudo systemctl restart gearbox-ws"},
