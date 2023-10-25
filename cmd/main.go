@@ -21,7 +21,7 @@ func startLogging() {
 		cfg.AMQPUrl,
 		log.LoggingConfig{
 			Exchange: "TelegramBot",
-			ChainId:  1,
+			ChainId:  7878,
 		},
 		cfg.AppName,
 	)
