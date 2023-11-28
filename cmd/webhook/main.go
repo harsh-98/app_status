@@ -15,18 +15,25 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var cmds = [][]string{
+type cmdObj struct {
+	cmd      []string
+	dontFail bool
+}
+
+var cmds = []cmdObj{
 	// {"bash", "-x", "/Users/harshjain/BACKUP/gearbox/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "172.232.121.133", "harshjain"},
-	{"sudo systemctl stop gpointbot"},
-	{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps ; drop table user_points; drop table events;"},
-	{"sudo systemctl restart gpointbot"},
-	{"sudo systemctl restart trading_price"},
-	{"sudo systemctl restart gearbox-ws"},
-	{"sudo systemctl stop third-eye"},
-	{"sudo systemctl stop charts_server"},
-	{"bash", "-x", "/home/debian/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "", "debian"},
-	{"sudo systemctl restart third-eye"},
-	{"sudo systemctl restart charts_server"},
+	{cmd: []string{"sudo systemctl stop gpointbot"}},
+	{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps "}, dontFail: true},
+	{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table user_points"}, dontFail: true},
+	{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table events"}, dontFail: true},
+	{cmd: []string{"sudo systemctl restart gpointbot"}},
+	{cmd: []string{"sudo systemctl restart trading_price"}},
+	{cmd: []string{"sudo systemctl restart gearbox-ws"}},
+	{cmd: []string{"sudo systemctl stop third-eye"}},
+	{cmd: []string{"sudo systemctl stop charts_server"}},
+	{cmd: []string{"bash", "-x", "/home/debian/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "", "debian"}},
+	{cmd: []string{"sudo systemctl restart third-eye"}},
+	{cmd: []string{"sudo systemctl restart charts_server"}},
 }
 
 type Config struct {
@@ -119,7 +126,8 @@ func (m *runCmdsObj) runCmds() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	log.AMQPMsg("Anvil Webhook received")
-	for _, cmdStr := range cmds {
+	for _, cmd := range cmds {
+		cmdStr := cmd.cmd
 		if len(cmdStr) == 1 {
 			cmdStr = strings.Split(cmdStr[0], " ")
 		}
@@ -128,7 +136,11 @@ func (m *runCmdsObj) runCmds() {
 		if err != nil {
 			log.Info(stdout)
 			log.Info(stderr)
-			log.Fatal(err)
+			if cmd.dontFail {
+				log.Warn("Ignoring error", err, "for cmd", cmdStr)
+			} else {
+				log.Fatal(err)
+			}
 		}
 	}
 }
