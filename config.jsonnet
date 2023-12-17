@@ -1,7 +1,8 @@
 {
   mainnet: {
     aggregatex: [
-      'https://mainnet.gearbox.foundation/aggregatex/metrics',
+      // 'https://mainnet.gearbox.foundation/aggregatex/metrics',
+      'https://aggregatex.fly.dev/metrics',
     ],
     'third-eye': [
       'https://mainnet.gearbox.foundation/metrics',
@@ -19,7 +20,8 @@
       'https://gearbox-ws.fly.dev/metrics',
     ],
     trading_price: [
-      'https://mainnet.gearbox.foundation/api/tradingview/config',
+      // 'https://mainnet.gearbox.foundation/api/tradingview/config',
+      'https://trading-price.fly.dev/api/tradingview/config',
     ],
   },
   anvil: {
