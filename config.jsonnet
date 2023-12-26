@@ -16,8 +16,11 @@
     charts_server: [
       'https://mainnet.gearbox.foundation/health',
     ],
-    'gearbox-ws-trading': [
+    'gearbox-ws': [
       'https://gearbox-ws.fly.dev/metrics',
+    ],
+    gpointbot: [
+      'https://testnet.gearbox.foundation/gpointbot/metrics',
     ],
     trading_price: [
       // 'https://mainnet.gearbox.foundation/api/tradingview/config',
@@ -40,7 +43,7 @@
     charts_server: [
       'https://testnet.gearbox.foundation/health',
     ],
-    'gearbox-ws-trading': [
+    'gearbox-ws': [
       'https://testnet.gearbox.foundation/gearbox-ws/metrics',
     ],
     gpointbot: [
