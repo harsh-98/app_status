@@ -179,7 +179,11 @@ func server() {
 	}))
 
 	log.AMQPMsg("Anvil Webhook started")
-	utils.ServerFromMux(mux, cfg.Port)
+	srv := http.Server{
+		Addr:    utils.GetHost(cfg.Port),
+		Handler: mux,
+	}
+	srv.ListenAndServe()
 }
 func main() {
 	server()

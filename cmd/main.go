@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -37,17 +36,16 @@ type ApplicationsUrl map[string][]string
 
 func main() {
 	startLogging()
-	port, err := strconv.ParseInt(utils.GetEnvOrDefault("PORT", "8080"), 10, 64)
-	log.CheckFatal(err)
+	host := utils.GetHost(utils.GetEnvOrDefault("PORT", "8080"))
 	//
-	mgr := newStatusManager(port)
+	mgr := newStatusManager(host)
 	mgr.Start()
 	log.AMQPMsg("App checker started")
 }
 
 type StatusManager struct {
 	statusCfg StatusConfig
-	port      int64
+	host      string
 	dontCheck map[string]bool
 }
 
@@ -85,11 +83,7 @@ func (mgr StatusManager) server() {
 		WriteSuccess(resp, mgr.dontCheck)
 	})
 	//
-	srv := http.Server{
-		Addr:    fmt.Sprintf(":%d", mgr.port),
-		Handler: mux,
-	}
-	go srv.ListenAndServe()
+	utils.ServerFromMux(mux, mgr.host)
 }
 func (mgr StatusManager) loop() {
 	for {
@@ -118,7 +112,7 @@ func (mgr StatusManager) checkStatus() {
 		log.Infof("Checked %d applications for %s", len(statusCfg), netName)
 	}
 }
-func newStatusManager(port int64) *StatusManager {
+func newStatusManager(host string) *StatusManager {
 	cfg := map[string]ApplicationsUrl{}
 	dataStr, err := core.GetJsonnetFile("config.jsonnet", core.JsonnetImports{})
 	log.CheckFatal(err)
@@ -126,7 +120,7 @@ func newStatusManager(port int64) *StatusManager {
 	utils.ReadJsonReaderAndSetInterface(reader, &cfg)
 	return &StatusManager{
 		statusCfg: (StatusConfig)(cfg),
-		port:      port,
+		host:      host,
 		dontCheck: map[string]bool{},
 	}
 }
