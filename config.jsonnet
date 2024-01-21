@@ -5,7 +5,7 @@
       'https://aggregatex.fly.dev/metrics',
     ],
     'third-eye': [
-      'https://mainnet.gearbox.foundation/metrics',
+      'https://testnet.gearbox.foundation/mainnet/metrics',
     ],
     definder: [
       'https://definder.fly.dev/metrics',
