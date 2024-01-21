@@ -7,9 +7,9 @@
     'third-eye': [
       'https://testnet.gearbox.foundation/mainnet/metrics',
     ],
-    definder: [
-      'https://definder.fly.dev/metrics',
-    ],
+    // definder: [
+    //   'https://definder.fly.dev/metrics',
+    // ],
     'go-liquidator': [
       'https://go-liquidator.fly.dev/metrics',
     ],
