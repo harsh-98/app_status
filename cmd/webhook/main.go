@@ -38,7 +38,7 @@ var cmds = []cmdObj{
 
 type Config struct {
 	log.CommonEnvs
-	Port int64 `env:"PORT" default:"9090"`
+	Port string `env:"PORT" default:"9090"`
 }
 
 func getConfig() *Config {
@@ -174,16 +174,12 @@ func server() {
 	//
 	mux := http.NewServeMux()
 	mux.Handle("/anvil_fork_reset", &runCmdsObj{})
-	srv := http.Server{
-		Addr:    fmt.Sprintf(":%d", cfg.Port),
-		Handler: mux,
-	}
 	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "OK")
 	}))
 
 	log.AMQPMsg("Anvil Webhook started")
-	srv.ListenAndServe()
+	utils.ServerFromMux(mux, cfg.Port)
 }
 func main() {
 	server()
