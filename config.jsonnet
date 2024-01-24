@@ -26,6 +26,7 @@
       // 'https://mainnet.gearbox.foundation/api/tradingview/config',
       'https://trading-price.fly.dev/api/tradingview/config',
     ],
+
   },
   anvil: {
     'third-eye': [
@@ -51,6 +52,10 @@
     ],
     trading_price: [
       'https://testnet.gearbox.foundation/api/tradingview/config',
+    ],
+    'http-logger': [
+      // 'https://mainnet.gearbox.foundation/api/tradingview/config',
+      'https://testnet.gearbox.foundation/logger/metrics',
     ],
   },
 }
