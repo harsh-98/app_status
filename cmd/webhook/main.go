@@ -32,7 +32,9 @@ func getCmds(remoteDB string) []cmdObj {
 		{cmd: []string{"sudo systemctl restart gearbox-ws"}},
 		{cmd: []string{"sudo systemctl stop anvil-third-eye"}},
 		{cmd: []string{"sudo systemctl stop charts_server"}},
+		{cmd: []string{"sudo systemctl stop gearbox-ws"}},
 		{cmd: []string{"bash", "-x", "/home/debian/anvil-third-eye/db_scripts/local_testing/local_test.sh", remoteDB, "debian"}},
+		{cmd: []string{"sudo systemctl restart gearbox-ws"}},
 		{cmd: []string{"sudo systemctl restart anvil-third-eye"}},
 		{cmd: []string{"sudo systemctl restart charts_server"}},
 	}
