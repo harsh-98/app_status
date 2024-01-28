@@ -1,8 +1,7 @@
 {
   mainnet: {
     aggregatex: [
-      // 'https://mainnet.gearbox.foundation/aggregatex/metrics',
-      'https://aggregatex.fly.dev/metrics',
+      'https://testnet.gearbox.foundation/aggregatex/metrics',
     ],
     'third-eye': [
       'https://testnet.gearbox.foundation/mainnet/metrics',
@@ -10,17 +9,21 @@
     // definder: [
     //   'https://definder.fly.dev/metrics',
     // ],
-    'go-liquidator': [
+    'liquidator-v2': [
       'https://go-liquidator.fly.dev/metrics',
+    ],
+    'liquidator-v3': [
+      'https://liquidator-v3.fly.dev/metrics',
     ],
     charts_server: [
       'https://mainnet.gearbox.foundation/health',
+      'https://charts-server.fly.dev/health',
     ],
     'gearbox-ws': [
       'https://gearbox-ws.fly.dev/metrics',
     ],
     gpointbot: [
-      'https://testnet.gearbox.foundation/gpointbot/metrics',
+      'https://gpointbot.fly.dev/metrics',
     ],
     trading_price: [
       // 'https://mainnet.gearbox.foundation/api/tradingview/config',
