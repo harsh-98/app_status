@@ -16,7 +16,7 @@
       'https://liquidator-v3.fly.dev/metrics',
     ],
     charts_server: [
-      'https://mainnet.gearbox.foundation/health',
+      // 'https://mainnet.gearbox.foundation/health',
       'https://charts-server.fly.dev/health',
     ],
     'gearbox-ws': [
