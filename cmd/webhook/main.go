@@ -20,13 +20,13 @@ type cmdObj struct {
 	dontFail bool
 }
 
-func getCmds(remoteDB string) []cmdObj {
+func getCmds(remoteDB string, gpointbotDB string) []cmdObj {
 	var cmds = []cmdObj{
 		// {"bash", "-x", "/Users/harshjain/BACKUP/gearbox/third-eye/db_scripts/local_testing/local_test.sh", "139.177.179.137", "172.232.121.133", "harshjain"},
 		{cmd: []string{"sudo systemctl stop gpointbot"}},
-		{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table last_snaps "}, dontFail: true},
-		{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table user_points"}, dontFail: true},
-		{cmd: []string{"sqlite3", "/home/debian/gpointbot/local.db", "drop table events"}, dontFail: true},
+		{cmd: []string{"psql", gpointbotDB, "-c", "drop table last_snaps"}, dontFail: true},
+		{cmd: []string{"psql", gpointbotDB, "-c", "drop table user_points"}, dontFail: true},
+		{cmd: []string{"psql", gpointbotDB, "-c", "drop table events"}, dontFail: true},
 		{cmd: []string{"sudo systemctl restart gpointbot"}},
 		{cmd: []string{"sudo systemctl restart trading_price"}},
 		{cmd: []string{"sudo systemctl restart gearbox-ws"}},
@@ -43,8 +43,9 @@ func getCmds(remoteDB string) []cmdObj {
 
 type Config struct {
 	log.CommonEnvs
-	Port     string `env:"PORT" default:"9090"`
-	RemoteDB string `env:"REMOTE_DB" default:""`
+	Port        string `env:"PORT" default:"9090"`
+	RemoteDB    string `env:"REMOTE_GEARBOX_DB" default:""`
+	GpointbotDB string `env:"LOCAL_GPOINTBOT_DB" default:""`
 }
 
 func getConfig() *Config {
@@ -132,7 +133,7 @@ func (m *runCmdsObj) runCmds() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	log.AMQPMsg("Anvil Webhook received")
-	for _, cmd := range getCmds(m.remoteDB) {
+	for _, cmd := range getCmds(m.remoteGBDB, m.localGpointbotDB) {
 		cmdStr := cmd.cmd
 		if len(cmdStr) == 1 {
 			cmdStr = strings.Split(cmdStr[0], " ")
@@ -152,8 +153,9 @@ func (m *runCmdsObj) runCmds() {
 }
 
 type runCmdsObj struct {
-	mu       sync.Mutex
-	remoteDB string
+	mu               sync.Mutex
+	remoteGBDB       string
+	localGpointbotDB string
 }
 
 func (m *runCmdsObj) ServeHTTP(hw http.ResponseWriter, hr *http.Request) {
@@ -180,7 +182,7 @@ func server() {
 	)
 	//
 	mux := http.NewServeMux()
-	mux.Handle("/anvil_fork_reset", &runCmdsObj{remoteDB: cfg.RemoteDB})
+	mux.Handle("/anvil_fork_reset", &runCmdsObj{remoteGBDB: cfg.RemoteDB, localGpointbotDB: cfg.GpointbotDB})
 	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "OK")
 	}))
