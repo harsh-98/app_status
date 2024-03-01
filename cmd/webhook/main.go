@@ -46,6 +46,7 @@ type Config struct {
 	Port        string `env:"PORT" default:"9090"`
 	RemoteDB    string `env:"REMOTE_GEARBOX_DB" default:""`
 	GpointbotDB string `env:"LOCAL_GPOINTBOT_DB" default:""`
+	ChainId     int    `env:"CHAIN_ID" default:"7878"`
 }
 
 func getConfig() *Config {
@@ -174,7 +175,7 @@ func server() {
 		cfg.AMQPUrl,
 		log.LoggingConfig{
 			Exchange:     "TelegramBot",
-			ChainId:      7878,
+			ChainId:      int64(cfg.ChainId),
 			RiskEndpoint: cfg.RiskEndpoint,
 			RiskSecret:   cfg.RiskSecret,
 		},
