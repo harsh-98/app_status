@@ -61,4 +61,35 @@
       'https://testnet.gearbox.foundation/logger/metrics',
     ],
   },
+  arbtest: {
+    'third-eye': [
+      'https://arbtest.gearbox.foundation/metrics',
+    ],
+    webhook: [
+      'https://arbtest.gearbox.foundation/webhook/health',
+    ],
+    charts_server: [
+      'https://arbtest.gearbox.foundation/health',
+    ],
+    'gearbox-ws': [
+      'https://arbtest.gearbox.foundation/gearbox-ws/metrics',
+    ],
+    // gpointbot: [
+    //   'https://arbtest.gearbox.foundation/gpointbot/metrics',
+    // ],
+  },
+  arbitrum: {
+    'third-eye': [
+      'https://arbitrum.gearbox.foundation/metrics',
+    ],
+    charts_server: [
+      'https://arbitrum.gearbox.foundation/health',
+    ],
+    'gearbox-ws': [
+      'https://arbitrum.gearbox.foundation/gearbox-ws/metrics',
+    ],
+    // gpointbot: [
+    //   'https://arbitrum.gearbox.foundation/gpointbot/metrics',
+    // ],
+  },
 }
