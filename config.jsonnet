@@ -62,9 +62,9 @@
     ],
   },
   arbtest: {
-    'third-eye': [
-      'https://arbtest.gearbox.foundation/metrics',
-    ],
+    // 'third-eye': [
+    //   'https://arbtest.gearbox.foundation/metrics',
+    // ],
     webhook: [
       'https://arbtest.gearbox.foundation/webhook/health',
     ],
